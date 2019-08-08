@@ -1,6 +1,7 @@
 package com.itheima.demo.controller;
 
 import com.itheima.demo.controller.data_transform_object.AccessTokenDTO;
+import com.itheima.demo.controller.data_transform_object.GithubUser;
 import com.itheima.demo.controller.githubprovider.GithubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,8 +33,21 @@ public class AuthorizeController {
         accessTokenDTO.setClient_secret("cac6df006323f3839287294c3adb4fe0b1dd8542");
         accessTokenDTO.setClient_id("dc93d13d5409f449ec98");
 
-        githubProvider.getAccessToken(accessTokenDTO);//将accesstokenDTO对象以post方式给了github，github会返回access_token，
-        //access_token包含了用户数据
+        String accessToken = githubProvider.getAccessToken(accessTokenDTO);//将accesstokenDTO对象以post方式给了github，github会返回access_token，
+//access_token包含了用户数据
+        GithubUser user = githubProvider.getUser(accessToken);
+        if(user!=null){
+            if(user.getName()!=null){
+                System.out.println(user.getName());
+            }else{
+                System.out.println("您没昵称");
+            }
+        }else {
+            System.out.println("没有此用户");
+        }
+
+
+
         //问题：code和state虽然被传回callback页面，但是怎么真正获得这两个值？？还是说这两个值就已经存在了callback中
         //解决：因为github第一次返回callback网址时候，因为是GET方法请求的所以返回的参数是默认在地址中的，此时我们的AuthorizeController
         //访问callback时候，地址里的参数绑定在了String coder，stater参数当中
