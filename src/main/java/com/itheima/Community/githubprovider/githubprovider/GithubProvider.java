@@ -1,14 +1,12 @@
-package com.itheima.demo.controller.githubprovider;
+package com.itheima.Community.githubprovider.githubprovider;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.itheima.demo.controller.data_transform_object.AccessTokenDTO;
-import com.itheima.demo.controller.data_transform_object.GithubUser;
+import com.itheima.Community.data_transform_object.data_transform_object.AccessTokenDTO;
+import com.itheima.Community.data_transform_object.data_transform_object.GithubUser;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 @Component
 //用okhttp模拟post请求,github返回token

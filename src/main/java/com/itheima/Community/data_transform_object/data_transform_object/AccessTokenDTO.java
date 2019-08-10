@@ -1,4 +1,4 @@
-package com.itheima.demo.controller.data_transform_object;
+package com.itheima.Community.data_transform_object.data_transform_object;
 
 public class AccessTokenDTO {
     private String client_id;//github官网可以查到这五个参数

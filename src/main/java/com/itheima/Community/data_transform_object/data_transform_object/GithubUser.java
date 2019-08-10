@@ -1,4 +1,4 @@
-package com.itheima.demo.controller.data_transform_object;
+package com.itheima.Community.data_transform_object.data_transform_object;
 
 public class GithubUser {
     private String name;
