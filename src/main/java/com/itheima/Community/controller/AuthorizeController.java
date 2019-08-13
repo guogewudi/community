@@ -11,7 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -35,6 +37,7 @@ public class AuthorizeController {
     private UserMapper userMapper;
 
     @GetMapping("/callback")
+    //跳转到重定向地址后回到index
     //过程详情请看API文档
     //IndexController 通过访问https://github.com/login/oauth/authorize 附带code，state，等5个参数
     //github返回了code和state给重定向地址callback
@@ -44,7 +47,8 @@ public class AuthorizeController {
 
     public String callback(@RequestParam(name="code")String coder,
                            @RequestParam(name="state")String stater,
-                                   HttpServletRequest request) throws IOException {
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) throws IOException {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setCode(coder);
         accessTokenDTO.setRedirect_uri(redirectUri);//重定向地址
@@ -53,23 +57,32 @@ public class AuthorizeController {
         accessTokenDTO.setClient_secret(clientSecret);
         accessTokenDTO.setClient_id(clientID);
 
+
+        //调用下面两个函数实现三次握手
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);//将accesstokenDTO对象以post方式给了github，github会返回access_token，
 //access_token包含了用户数据
         GithubUser githubUser = githubProvider.getUser(accessToken);
 
         if(githubUser!=null){
 
-            request.getSession().setAttribute("githubUser",githubUser);
-            if(githubUser.getName()!=null){
+             if(githubUser.getName()!=null){
                 User user = new User();
-                user.setToken(UUID.randomUUID().toString());
+                String token = UUID.randomUUID().toString();
+                user.setToken(token);
                 user.setName(githubUser.getName());
                 user.setAccountID(String.valueOf(githubUser.getId()));
                 user.setGmt_create(System.currentTimeMillis());
                 user.setGmt_modified(user.getGmt_create());
 
                 userMapper.insert(user);
+                //token写入cookie
+                //cookie名字是token
+                response.addCookie(new Cookie("token",token));
                 System.out.println(githubUser.getName());
+
+               // request.getSession().setAttribute("githubUser",githubUser);
+
+
             }else{
                 System.out.println("您没昵称");
             }
